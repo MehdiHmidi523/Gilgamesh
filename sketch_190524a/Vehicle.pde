@@ -1,8 +1,4 @@
-// The Nature of Code
-// Daniel Shiffman
-// http://natureofcode.com
-
-// The "Vehicle" class
+Referenced
 
 class Vehicle {
   
