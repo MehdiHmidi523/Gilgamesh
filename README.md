@@ -9,4 +9,4 @@ Step 3: open repository
 
 Step 4: run simulation
 
-Step 5: continue read thesis
+Step 5: continue to read thesis
