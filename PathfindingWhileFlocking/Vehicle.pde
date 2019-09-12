@@ -20,7 +20,7 @@ class Unit {
     if (thinkTimer ==0 )
       getFriends();
     flock();
-    arrive(new PVector(width - 50,height/2));
+    arrive(new PVector(width - 60,60));
     pos.add(move);
   }
   
@@ -38,6 +38,7 @@ class Unit {
     // Steering = Desired minus Velocity
     PVector steer = PVector.sub(desired,move);
     steer.limit(0.05);  // Limit to maximum steering force
+    steer.mult(3.2);
     move.add(steer);
   }
   
@@ -61,19 +62,19 @@ class Unit {
     PVector noise = new PVector(random(2) - 1, random(2) -1);
     PVector cohese = getCohesion();
 
-    allign.mult(1);
+    allign.mult(3.2);
     if (!option_friend) allign.mult(0);
     
-    avoidDir.mult(1);
+    avoidDir.mult(8);
     if (!option_crowd) avoidDir.mult(0);
     
-    avoidObjects.mult(3);
+    avoidObjects.mult(3.2);
     if (!option_avoid) avoidObjects.mult(0);
 
     noise.mult(0.1);
     if (!option_noise) noise.mult(0);
 
-    cohese.mult(1);
+    cohese.mult(3.2);
     if (!option_cohese) cohese.mult(0);
     
     stroke(0, 255, 160);
@@ -208,8 +209,8 @@ class Unit {
   void draw(){
     for ( int i = 0; i < friends.size(); i++) {
       Unit f = friends.get(i);
-      stroke(0);
-      line(this.pos.x, this.pos.y, f.pos.x, f.pos.y);
+      stroke(87);
+      //line(this.pos.x, this.pos.y, f.pos.x, f.pos.y);
     }
     noStroke();
     fill(shade, 90, 200);
@@ -228,5 +229,4 @@ class Unit {
   void increment () {
     thinkTimer = (thinkTimer + 1) % 5;
   }
-
 }

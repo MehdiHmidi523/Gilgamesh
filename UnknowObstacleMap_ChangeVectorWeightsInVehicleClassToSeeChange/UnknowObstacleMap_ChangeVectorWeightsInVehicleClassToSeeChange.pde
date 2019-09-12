@@ -22,30 +22,32 @@ boolean option_cohese = true;
 
 int messageTimer = 0;
 String messageText = "";
-
-
+PrintWriter output;
 Threat threat;
-
-
+long start = System.currentTimeMillis();
+long finish = 0;
+long timeElapsed = finish - start;
 void setup () {
-  size(500,500);
+  size(700,700);
+  output = createWriter("Goal2STEPSNORMALWEIGHTS.txt"); //Specify for https://app.rawgraphs.io/
   smooth();
   background(162);
   textSize(16);
   recalculateConstants();
   Units = new ArrayList<Unit>();
   avoids = new ArrayList<obstacle>();
-  for (int x = 20; x < height - 30; x+= 30) 
-      Units.add(new Unit(20, x + 20)); 
+  
+  for (int x = 0; x < 24; x++) Units.add(new Unit(70, height -50 + x));
+  
   setupWalls();
-  setupScenario_3();
+  setupScenario_1();
 }
 
 void recalculateConstants () {
-  maxSpeed = 2 * globalScale;
+  maxSpeed = 1.3 * globalScale;
   friendRadius = 50 * globalScale;
-  crowdRadius = (friendRadius / 1.3);
-  avoidRadius = 50 * globalScale;
+  crowdRadius = (friendRadius / 1.5);
+  avoidRadius = 15 * globalScale;
   coheseRadius = friendRadius;
 }
 
@@ -60,20 +62,64 @@ void setupWalls() {
 }
 
 void setupScenario_1() {
-   for (int x = 0; x < height/2; x+= 10) {
-     avoids.add(new obstacle(width/2-60,x));
-     
-   }
-   avoids.add(new obstacle(height/2,height/2));
-   avoids.add(new obstacle(height/2-40,height/2+30));
-   avoids.add(new obstacle(height/2,height/2));
-   avoids.add(new obstacle(height/2-40,height/2+30));
-   avoids.add(new obstacle(height/2+40,height/2));
-   avoids.add(new obstacle(height/2+40,height/2+30));
+  for (int x = height-107; x < height-30; x++) {//right
+     for (int f = 130; f < 131; f++){
+     avoids.add(new obstacle(f,x));
+     }
+  }
+  for (int x = height-107; x < height-30; x++) {//left
+     for (int f = 30; f < 31; f++){
+     avoids.add(new obstacle(f,x));
+     }
+  }
+  for (int x = 30; x < 112; x++) {
+     for (int f = height-107; f < height-105; f++){//top
+     avoids.add(new obstacle(x,f));
+     }
+  }
+  
+  for (int x = height/2; x < height/2+60; x++) {//left
+     for (int f = 30; f < 33; f++){
+     avoids.add(new obstacle(x,x)); //croisee
+     }
+  }
+ 
+ 
+  for (int x = width/2 ; x < width/2+110; x++) {//left
+     for (int f = height/2; f < height/2+2; f++){
+     avoids.add(new obstacle(x,f));
+     }
+  } 
+  
+  //base top left
+  for (int x = 40; x < height/2-100; x++) {
+     for (int f = height/2; f < height/2+2; f++){//top
+     avoids.add(new obstacle(x,f));
+     }
+  }
+  
+  //right top left
+   for (int x = height/2-200; x < height/2; x++) {//right
+     for (int f = height/2-100; f < height/2-100+2; f++){
+     avoids.add(new obstacle(f,x));
+     }
+  }
+ 
+   for (int x =100; x < height/2-50; x++) {
+     for (int f = height/2; f < height/2+2; f++){//top
+     avoids.add(new obstacle(f,x));
+     }
+  } 
+  
+  for (int x = width/2-30 ; x < width/2+110; x++) {//left
+     for (int f = height/2-50; f < height/2-48; f++){
+     avoids.add(new obstacle(x,f));
+     }
+  }
 }
 
 void setupScenario_2(){
-threat = new Threat(width/2,height/2+60); // enable line 80;
+  threat = new Threat(width/2,height/2+60); // enable line 80;
 }
 
 void setupScenario_3(){
@@ -95,21 +141,39 @@ void draw () {
   fill(255, 255);
   rect(0, 0, width, height);
 
-  threat.go();
-  threat.draw();
-  
+  int xx=0;
   for (int i = 0; i <Units.size(); i++) {
     Unit current = Units.get(i);
-    current.repel(threat.pos,20,20,20);
-    threat.shade = 100;
+    System.out.println("Unit"+i+":{ X = "+current.pos.x+"; Y = "+current.pos.y+"; "+current.steps);
+    output.println("Unit "+i+";"+current.pos.x+";"+current.pos.y+"; "+current.steps);
+    float x = current.pos.x;
+    float y = current.pos.y;
+    
     current.go();
     current.draw();
+    
+    if((Math.abs(current.pos.x - x) < 5) || (Math.abs(current.pos.y - y) < 5))
+      current.steps++;
+    if(Math.abs(current.pos.x - x)<1)
+      current.repel(new PVector(x,y),1,2,5);
+    
+    if(current.pos.x>600 && current.pos.y<100){
+      current.move=new PVector(0,0);
+      xx++;
+    }
   }
-
+  
+  if(xx>20){
+    output.flush();  // Writes the remaining data to the file
+    output.close();  // Finishes the file
+    exit();  // Stops the program
+  }
+  
   for (int i = 0; i <avoids.size(); i++) {
     obstacle current = avoids.get(i);
     current.go();
     current.draw();
+    
   }
   if (messageTimer > 0)
     messageTimer -= 1; 
@@ -182,7 +246,9 @@ void mousePressed () {
     message(Units.size() + " Total Unit" + s(Units.size()));
     break;
   case "avoids":
-    avoids.add(new obstacle(mouseX, mouseY));
+    for (int x = mouseX; x < mouseX+150; x++) 
+       for (int f = mouseY; f < mouseY+1; f++)//top
+           avoids.add(new obstacle(x,f));
     break;
   }
 }
