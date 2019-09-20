@@ -1,5 +1,6 @@
 # Gilgamesh
 Bachelor thesis Dynamic flocking under uncertainty using Swarm intelligence
+Use https://app.rawgraphs.io/ for the visualization of the results(txt files) in the ObstacleMap Folder
 
 Step 1: https://processing.org/download/
 
